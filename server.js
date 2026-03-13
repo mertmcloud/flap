@@ -24,6 +24,18 @@ async function initDB() {
   `);
 }
 
+app.get('/api/health', async (req, res) => {
+  if (!process.env.DATABASE_URL) {
+    return res.status(500).json({ ok: false, error: 'DATABASE_URL tanımlı değil' });
+  }
+  try {
+    await pool.query('SELECT 1');
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 app.get('/api/scores', async (req, res) => {
   try {
     const result = await pool.query(
@@ -32,7 +44,7 @@ app.get('/api/scores', async (req, res) => {
     );
     res.json(result.rows);
   } catch (e) {
-    console.error(e);
+    console.error('GET /api/scores hatası:', e.message);
     res.status(500).json([]);
   }
 });
@@ -53,12 +65,14 @@ app.post('/api/scores', async (req, res) => {
     );
     res.json(result.rows);
   } catch (e) {
-    console.error(e);
+    console.error('POST /api/scores hatası:', e.message);
     res.status(500).json({ error: 'Skor kaydedilemedi' });
   }
 });
 
 const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Flappy Ekip sunucusu çalışıyor: http://localhost:${PORT}`));
+
 initDB()
-  .then(() => app.listen(PORT, () => console.log(`Flappy Ekip sunucusu çalışıyor: http://localhost:${PORT}`)))
-  .catch(err => { console.error('DB başlatılamadı:', err); process.exit(1); });
+  .then(() => console.log('Veritabanı hazır'))
+  .catch(err => console.error('DB başlatılamadı:', err.message));
