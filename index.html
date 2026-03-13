@@ -125,7 +125,7 @@ document.getElementById('playerName').addEventListener('keydown',e=>{
 
 // EASIER game constants
 let bird,pipes,score,highScore,groundX,particles,flashAlpha,shakeDur;
-const GRAVITY=0.15, FLAP_VEL=-4.2, MAX_FALL=3.5, PIPE_SPEED=1.8, PIPE_GAP=190, PIPE_WIDTH=58, PIPE_FREQ=125, GROUND_H=80;
+const GRAVITY=0.18, FLAP_VEL=-4.8, MAX_FALL=4.5, PIPE_SPEED=2.2, PIPE_GAP_RATIO=0.30, PIPE_WIDTH=58, PIPE_FREQ=108, GROUND_H=80;
 let frameCount=0,pipeTimer=0;
 
 let clouds=[], stars=[];
@@ -205,7 +205,7 @@ function drawSinglePipe(x,y,w,h){
 function drawPipe(p){
   const gy=canvas.height-GROUND_H;
   drawSinglePipe(p.x,0,PIPE_WIDTH,p.topH);
-  drawSinglePipe(p.x,p.topH+PIPE_GAP,PIPE_WIDTH,gy-p.topH-PIPE_GAP);
+  drawSinglePipe(p.x,p.topH+p.gap,PIPE_WIDTH,gy-p.topH-p.gap);
 }
 
 function drawBird(){
@@ -288,7 +288,7 @@ function drawFlash(){if(flashAlpha>0){ctx.fillStyle=`rgba(255,255,255,${flashAlp
 function checkCollision(){
   const ch=canvas.height,gy=ch-GROUND_H,bx=bird.x+4,by=bird.y+4,bw=bird.w-8,bh=bird.h-8;
   if(by+bh>=gy||by<=0)return true;
-  for(const p of pipes){if(bx+bw>p.x&&bx<p.x+PIPE_WIDTH&&by<p.topH)return true;if(bx+bw>p.x&&bx<p.x+PIPE_WIDTH&&by+bh>p.topH+PIPE_GAP)return true;}
+  for(const p of pipes){if(bx+bw>p.x&&bx<p.x+PIPE_WIDTH&&by<p.topH)return true;if(bx+bw>p.x&&bx<p.x+PIPE_WIDTH&&by+bh>p.topH+p.gap)return true;}
   return false;
 }
 
@@ -296,7 +296,7 @@ function update(dt){
   if(state!==STATE.PLAYING)return;
   frameCount++;bird.vel+=GRAVITY*dt;if(bird.vel>MAX_FALL)bird.vel=MAX_FALL;bird.y+=bird.vel*dt;
   groundX-=PIPE_SPEED*dt;if(groundX<=-20)groundX=0;
-  pipeTimer+=dt;if(pipeTimer>=PIPE_FREQ){pipeTimer=0;const ch=canvas.height,gy=ch-GROUND_H,minTop=60,maxTop=gy-PIPE_GAP-60;pipes.push({x:canvas.width,topH:minTop+Math.random()*(maxTop-minTop),scored:false});}
+  pipeTimer+=dt;if(pipeTimer>=PIPE_FREQ){pipeTimer=0;const ch=canvas.height,gy=ch-GROUND_H,gap=Math.round(PIPE_GAP_RATIO*(gy)),minTop=60,maxTop=gy-gap-60;pipes.push({x:canvas.width,topH:minTop+Math.random()*(maxTop-minTop),gap,scored:false});}
   pipes.forEach(p=>{p.x-=PIPE_SPEED*dt;if(!p.scored&&p.x+PIPE_WIDTH<bird.x){p.scored=true;score++;playSound('score');spawnParticles(bird.x+bird.w,bird.y+bird.h/2,6,'#ffdd44');}});
   pipes=pipes.filter(p=>p.x+PIPE_WIDTH>-10);
   if(checkCollision()){state=STATE.GAMEOVER;playSound('hit');flashAlpha=.7;shakeDur=12;spawnParticles(bird.x+bird.w/2,bird.y+bird.h/2,20,'#ff4466');if(score>highScore){highScore=score;localStorage.setItem('flappyEkipHS',highScore);}setTimeout(()=>showNameOverlay(score),600);}
