@@ -5,7 +5,6 @@ const app = express();
 const MAX_SCORES = 100;
 
 app.use(express.json());
-app.use(express.static(__dirname));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -69,6 +68,8 @@ app.post('/api/scores', async (req, res) => {
     res.status(500).json({ error: 'Skor kaydedilemedi' });
   }
 });
+
+app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Flappy Ekip sunucusu çalışıyor: http://localhost:${PORT}`));
