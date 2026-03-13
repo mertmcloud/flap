@@ -92,18 +92,12 @@ let playerName='Oyuncu';
 // Leaderboard
 let cachedLeaderboard=[];
 function getLeaderboard(){return cachedLeaderboard;}
-async function fetchLeaderboard(){try{const r=await fetch('/api/scores');if(r.ok){cachedLeaderboard=await r.json();return;}}catch(e){}try{cachedLeaderboard=JSON.parse(localStorage.getItem('flappyEkipLB')||'[]');}catch(e){cachedLeaderboard=[];}}
+async function fetchLeaderboard(){try{const r=await fetch('/api/scores');if(r.ok){cachedLeaderboard=await r.json();}}catch(e){console.error('Skor tablosu yüklenemedi:',e);}}
 async function saveToLeaderboard(name,sc,charName){
   try{
     const r=await fetch('/api/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name||'Anonim',score:sc,char:charName})});
-    if(r.ok){cachedLeaderboard=await r.json();return;}
-  }catch(e){}
-  const lb=JSON.parse(localStorage.getItem('flappyEkipLB')||'[]');
-  lb.push({name:name||'Anonim',score:sc,char:charName,date:Date.now()});
-  lb.sort((a,b)=>b.score-a.score);
-  if(lb.length>20)lb.length=20;
-  localStorage.setItem('flappyEkipLB',JSON.stringify(lb));
-  cachedLeaderboard=lb;
+    if(r.ok){cachedLeaderboard=await r.json();}
+  }catch(e){console.error('Skor kaydedilemedi:',e);}
 }
 function showNameOverlay(sc){
   document.getElementById('finalScore').textContent=sc;
