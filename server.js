@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const SCORES_FILE = path.join(__dirname, 'scores.json');
+// Render'da disk mount path: DATA_DIR=/data env variable ile ayarlanır
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+const SCORES_FILE = path.join(DATA_DIR, 'scores.json');
 const MAX_SCORES = 100;
 
 app.use(express.json());
