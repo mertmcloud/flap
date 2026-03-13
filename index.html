@@ -101,6 +101,7 @@ async function saveToLeaderboard(name,sc,charName){
     const r=await fetch('/api/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     console.log('[DEBUG] Yanıt status:', r.status, r.ok);
     if(r.ok){cachedLeaderboard=await r.json();console.log('[DEBUG] cachedLeaderboard güncellendi, uzunluk:', cachedLeaderboard.length);}
+    else if(r.status===409){alert('Bu isimle daha yüksek bir skor zaten kayıtlı!');}
     else{const txt=await r.text();console.error('[DEBUG] Sunucu hatası:', r.status, txt);}
   }catch(e){console.error('[DEBUG] Skor kaydedilemedi:',e);}
 }
@@ -125,7 +126,7 @@ document.getElementById('playerName').addEventListener('keydown',e=>{
 
 // EASIER game constants
 let bird,pipes,score,highScore,groundX,particles,flashAlpha,shakeDur;
-const GRAVITY=0.18, FLAP_VEL=-4.8, MAX_FALL=4.5, PIPE_SPEED=2.2, PIPE_GAP_RATIO=0.30, PIPE_WIDTH=58, PIPE_FREQ=108, GROUND_H=80;
+const GRAVITY=0.21, FLAP_VEL=-5.4, MAX_FALL=5.0, PIPE_SPEED=2.6, PIPE_GAP_RATIO=0.30, PIPE_WIDTH=58, PIPE_FREQ=92, GROUND_H=80;
 let frameCount=0,pipeTimer=0;
 
 let clouds=[], stars=[];
