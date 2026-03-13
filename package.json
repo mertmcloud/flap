@@ -1,0 +1,12 @@
+{
+  "name": "flappy-ekip",
+  "version": "1.0.0",
+  "description": "Flappy Bird tarzı tarayıcı oyunu",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
