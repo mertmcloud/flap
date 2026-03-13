@@ -95,13 +95,19 @@ function getLeaderboard(){return cachedLeaderboard;}
 async function fetchLeaderboard(){try{const r=await fetch('/api/scores');if(r.ok){cachedLeaderboard=await r.json();}}catch(e){console.error('Skor tablosu yüklenemedi:',e);}}
 async function saveToLeaderboard(name,sc,charName){
   try{
-    const r=await fetch('/api/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name||'Anonim',score:sc,char:charName})});
-    if(r.ok){cachedLeaderboard=await r.json();}
-  }catch(e){console.error('Skor kaydedilemedi:',e);}
+    console.log('[DEBUG] saveToLeaderboard çağrıldı, skor:', sc, 'tip:', typeof sc);
+    const body={name:name||'Anonim',score:sc,char:charName};
+    console.log('[DEBUG] Gönderilen body:', JSON.stringify(body));
+    const r=await fetch('/api/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    console.log('[DEBUG] Yanıt status:', r.status, r.ok);
+    if(r.ok){cachedLeaderboard=await r.json();console.log('[DEBUG] cachedLeaderboard güncellendi, uzunluk:', cachedLeaderboard.length);}
+    else{const txt=await r.text();console.error('[DEBUG] Sunucu hatası:', r.status, txt);}
+  }catch(e){console.error('[DEBUG] Skor kaydedilemedi:',e);}
 }
 let _savedScore=0;
 function showNameOverlay(sc){
   _savedScore=sc;
+  console.log('[DEBUG] showNameOverlay çağrıldı, sc:', sc, 'global score:', score);
   document.getElementById('finalScore').textContent=sc;
   document.getElementById('playerName').value=playerName!=='Oyuncu'?playerName:'';
   const ov=document.getElementById('nameOverlay');ov.classList.add('show');
