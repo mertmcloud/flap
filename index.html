@@ -99,7 +99,9 @@ async function saveToLeaderboard(name,sc,charName){
     if(r.ok){cachedLeaderboard=await r.json();}
   }catch(e){console.error('Skor kaydedilemedi:',e);}
 }
+let _savedScore=0;
 function showNameOverlay(sc){
+  _savedScore=sc;
   document.getElementById('finalScore').textContent=sc;
   document.getElementById('playerName').value=playerName!=='Oyuncu'?playerName:'';
   const ov=document.getElementById('nameOverlay');ov.classList.add('show');
@@ -108,7 +110,7 @@ function showNameOverlay(sc){
 function hideNameOverlay(){document.getElementById('nameOverlay').classList.remove('show');}
 document.getElementById('saveScoreBtn').addEventListener('click',async()=>{
   const n=document.getElementById('playerName').value.trim()||'Anonim';
-  playerName=n;await saveToLeaderboard(n,score,selectedChar?selectedChar.name:'?');hideNameOverlay();state=STATE.LEADERBOARD;
+  playerName=n;await saveToLeaderboard(n,_savedScore,selectedChar?selectedChar.name:'?');hideNameOverlay();state=STATE.LEADERBOARD;
 });
 document.getElementById('skipBtn').addEventListener('click',()=>{hideNameOverlay();state=STATE.LEADERBOARD;});
 document.getElementById('playerName').addEventListener('keydown',e=>{
